@@ -126,3 +126,41 @@ test("the data is peanut butter", async () => {
   const data = await fetchData();
   expect(data).toBe("peanut butter");
 });
+
+function fetchDataFail() {
+  return Promise.reject("error");
+}
+
+test("the fetch fails with an error", async () => {
+  expect.assertions(1);
+  try {
+    await fetchDataFail();
+  } catch (e) {
+    expect(e).toMatch("error");
+  }
+});
+
+test("the data is peanut butter", async () => {
+  await expect(fetchData()).resolves.toBe("peanut butter");
+});
+
+test("the fetch fails whith an error", async () => {
+  await expect(fetchDataFail()).rejects.toMatch("error");
+});
+
+test("the fetch fails with an error", () => {
+  expect.assertions(1);
+  return fetchDataFail().catch((e) => expect(e).toMatch("error"));
+});
+
+// Don't do this!
+test("the data is peanut butter", () => {
+  function callback(error, data) {
+    if (error) {
+      throw error;
+    }
+    expect(data).toBe("peanut butter");
+  }
+
+  fetchData(callback);
+});
